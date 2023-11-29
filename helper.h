@@ -18,6 +18,8 @@ struct node {
     DIRCT direction;
     int row_num;
     int col_num;
+    // bool visited;
+    // bool explored;
 };
 
 
@@ -26,22 +28,26 @@ class ApolloDianaGraph {
         int rows;
         int cols;
         vector<vector<node> > board;
-        unordered_map<node*, vector<pair<node, int> > > adjacencies;
+        unordered_map<node*, vector<pair<node*, int> > > adjacencies;
+
+        // constructor helper functions, should not be called by user
+        void parseBoard(ifstream& input_file);
+        void assignDirection(node* n, string direction);
+        void buildNeighbors(node* start);
+        void scanBoard(node* start, int dx, int dy);
+        vector<string> DFS();
+
+        // general helper functions for printing/ debugging
+        // also should not be called by user
+        void printBoard();
+        void printAdjacencies();
+        void printNode(node* n);
 
     public:
         // constructor
         ApolloDianaGraph(ifstream& input_file);
-
-        // helper functions
-        void parseBoard(ifstream& input_file);
-        void assignDirection(node* n, string direction);
-        void buildNeighbors(node start);
-        void solveWrite();
-
-        void scanBoard(node start, int dx, int dy);
-    
-        void printBoard();
-        void printAdjacencies();
+        
+        void solveWrite(string output_file_name);
 
 };
 
