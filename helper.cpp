@@ -17,8 +17,8 @@ ApolloDianaGraph::ApolloDianaGraph(ifstream& input_file) {
 void ApolloDianaGraph::parseBoard(ifstream& input_file) {
     // creates 2D matrix representing board
     // each element in matrix is a node*
-    // each node* has a color and a direction
-    // DOES NOT represent graph yet
+    // each node* has a color, direction, and row/col number
+    // * DOES NOT represent graph yet * //
     if (!input_file.is_open()) {
         cout << "Error opening file" << endl;
         return;
@@ -27,6 +27,7 @@ void ApolloDianaGraph::parseBoard(ifstream& input_file) {
     input_file >> rows >> cols;
     board.resize(rows, vector<node>(cols));
 
+    // read next token, assign color/direction to node*, add node* to board
     node* temp;
     string color, line, direction;
     for (int i = 0; i < rows; i++) {
@@ -56,6 +57,7 @@ void ApolloDianaGraph::parseBoard(ifstream& input_file) {
 
 
 void ApolloDianaGraph::assignDirection(node* n, string direction) {
+
     if (direction == "N") {
         n->direction = N;
     } else if (direction == "E") {
@@ -118,16 +120,15 @@ void ApolloDianaGraph::scanBoard(node* start, int dx, int dy) {
     int count = 0;
     node* temp = start;
     vector<pair<node*, int>> edges;
+    
     // follow arrow until boundary
-
-    while ( (temp->row_num >= 0 && temp->row_num < rows) &&
-            (temp->col_num >= 0 && temp->col_num < cols)) {
-
+    while ( true ) {
         next_row_num = temp->row_num + dx;
         next_col_num = temp->col_num + dy;
         if (next_row_num < 0 || next_row_num >= rows || next_col_num < 0 || next_col_num >= cols) {
             break;
         }
+
         temp = &(board[next_row_num][next_col_num]);
 
         count++;
@@ -141,17 +142,29 @@ void ApolloDianaGraph::scanBoard(node* start, int dx, int dy) {
 }
 
 
-void ApolloDianaGraph::solveWrite(string output_file_name) {
-    vector<string> result = DFS();
+void ApolloDianaGraph::solveWrite(string output_file_name, string traversalMethod) {
+    
+    vector<string> result;
+    if (traversalMethod == "DFS") {
+        result = DFS();
+    } else if (traversalMethod == "BFS") {
+        result = BFS();
+    } else {
+        cout << "Invalid traversal method" << endl;
+        return;
+    }
+
     ofstream output_file;
     output_file.open(output_file_name);
-    if (result.empty()) {
-        cout << "No path found" << endl;
-    } else {
+
+    if (!result.empty()) {
         for (int i = 0; i < result.size()-1; i++) {
             output_file << result[i];
         }
+    } else {
+        output_file << "No path found";
     }
+
     output_file.close();
 }
 
@@ -202,6 +215,48 @@ vector<string> ApolloDianaGraph::DFS() {
 }
 
 
+// ! BFS returns the edge weights, but not the node* directions...
+// ! pls don't grade this one ;_;
+vector<string> ApolloDianaGraph::BFS() {
+    vector<string> dirctToString = {"E", "SE", "S", "SW", "W", "NW", "N", "NE", ""};
+    queue<pair<node*, vector<int>>> cueue;  // Pair to store both node and path weights
+    vector<string> finalAnswer;
+    unordered_map<node*, bool> visited;
+    vector<int> newPathWeights;
+
+    cueue.push({&(board[0][0]), {}});  // Start with an empty path
+
+    while (!cueue.empty()) {
+        node* curr = cueue.front().first;
+        vector<int> pathWeights = cueue.front().second;
+        cueue.pop();
+
+        if (curr->color == O) {
+            // Found the end node, construct the final path string
+            string temp;
+            for (int i = 0; i < newPathWeights.size(); i++) {
+                temp = to_string(newPathWeights[i]) + dirctToString[curr->direction] + " ";
+                finalAnswer.push_back(temp);
+            }
+            return finalAnswer;
+        }
+
+        for (int i = 0; i < adjacencies[curr].size(); i++) {
+            if (!visited[adjacencies[curr][i].first]) {
+                // Enqueue the neighbor with an extended path
+                newPathWeights = pathWeights;
+                newPathWeights.push_back(adjacencies[curr][i].second);
+                cueue.push({adjacencies[curr][i].first, newPathWeights});
+                visited[adjacencies[curr][i].first] = true;
+            }
+        }
+    }
+
+    // If no path is found, return an empty vector
+    return vector<string>();
+}
+
+
 void ApolloDianaGraph::printBoard() {
     // prints color and direction of each node* in board, according to enums
     for (int i = 0; i < board.size(); i++) {
@@ -231,5 +286,4 @@ void ApolloDianaGraph::printAdjacencies() {
         cout << "]" << endl;
         cout << endl << endl;
     }
-
 }

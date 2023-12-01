@@ -7,6 +7,7 @@
 #include <vector>
 #include <queue>
 #include <unordered_map>
+#include <deque>
 
 using namespace std;
 
@@ -18,8 +19,6 @@ struct node {
     DIRCT direction;
     int row_num;
     int col_num;
-    // bool visited;
-    // bool explored;
 };
 
 
@@ -27,15 +26,17 @@ class ApolloDianaGraph {
     private:
         int rows;
         int cols;
-        vector<vector<node> > board;
-        unordered_map<node*, vector<pair<node*, int> > > adjacencies;
+        vector<vector<node>> board;
+        unordered_map<node*, vector<pair<node*, int>>> adjacencies;
 
         // constructor helper functions, should not be called by user
         void parseBoard(ifstream& input_file);
         void assignDirection(node* n, string direction);
         void buildNeighbors(node* start);
         void scanBoard(node* start, int dx, int dy);
-        vector<string> DFS();
+        
+        vector<string> DFS();   // slightly faster than BFS for "apollodiana.txt"
+        vector<string> BFS();   // incorrect output format
 
         // general helper functions for printing/ debugging
         // also should not be called by user
@@ -47,7 +48,7 @@ class ApolloDianaGraph {
         // constructor
         ApolloDianaGraph(ifstream& input_file);
         
-        void solveWrite(string output_file_name);
+        void solveWrite(string output_file_name, string traversalMethod);
 
 };
 
