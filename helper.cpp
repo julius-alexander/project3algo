@@ -45,11 +45,7 @@ void ApolloDianaGraph::parseBoard(string input_file) {
                 temp->color = O;
                 temp->direction = NS;     // dummy direction
             }
-            
-            board[i][j].color = temp->color;
-            board[i][j].direction = temp->direction;
-            board[i][j].row_num = temp->row_num;
-            board[i][j].col_num = temp->col_num;
+            board[i][j] = *temp;
         }
     }
     file_in.close();
