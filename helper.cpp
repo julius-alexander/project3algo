@@ -1,7 +1,7 @@
 #include "helper.h"
 
 
-ApolloDianaGraph::ApolloDianaGraph(ifstream& input_file) {
+ApolloDianaGraph::ApolloDianaGraph(string input_file) {
     
     parseBoard(input_file);
 
@@ -14,27 +14,27 @@ ApolloDianaGraph::ApolloDianaGraph(ifstream& input_file) {
 }
 
 
-void ApolloDianaGraph::parseBoard(ifstream& input_file) {
+void ApolloDianaGraph::parseBoard(string input_file) {
     // creates 2D matrix representing board
     // each element in matrix is a node*
     // each node* has a color, direction, and row/col number
     // * DOES NOT represent graph yet * //
-    if (!input_file.is_open()) {
-        cout << "Error opening file" << endl;
-        return;
-    }
 
-    input_file >> rows >> cols;
+    ifstream file_in;
+    file_in.open(input_file);
+    if (!file_in.is_open()) return;
+
+    file_in >> rows >> cols;
     board.resize(rows, vector<node>(cols));
 
     // read next token, assign color/direction to node*, add node* to board
-    node* temp;
+    node* temp = new node;
     string color, line, direction;
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
             temp->row_num = i;
             temp->col_num = j;
-            input_file >> line;
+            file_in >> line;
             color = line.substr(0, 1);
             
             if (color == "R" || color == "B") {
@@ -52,7 +52,7 @@ void ApolloDianaGraph::parseBoard(ifstream& input_file) {
             board[i][j].col_num = temp->col_num;
         }
     }
-    input_file.close();
+    file_in.close();
 }
 
 

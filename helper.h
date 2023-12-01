@@ -30,7 +30,7 @@ class ApolloDianaGraph {
         unordered_map<node*, vector<pair<node*, int>>> adjacencies;
 
         // constructor helper functions, should not be called by user
-        void parseBoard(ifstream& input_file);
+        void parseBoard(string input_file);
         void assignDirection(node* n, string direction);
         void buildNeighbors(node* start);
         void scanBoard(node* start, int dx, int dy);
@@ -46,7 +46,7 @@ class ApolloDianaGraph {
 
     public:
         // constructor
-        ApolloDianaGraph(ifstream& input_file);
+        ApolloDianaGraph(string input_file);
         
         void solveWrite(string output_file_name, string traversalMethod);
 
